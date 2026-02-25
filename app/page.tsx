@@ -1,26 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion } from "framer-motion";
-import {
-  ShoppingCart,
-  Phone,
-  Mail,
-  MapPin,
-  Instagram,
-  Menu,
-  X,
-} from "lucide-react";
-
-/* ================= TYPES ================= */
-type Flavor = {
-  id: number;
-  name: string;
-  category: string;
-  price: number;
-  desc: string;
-  img: string;
-};
+import React, { useEffect, useState } from "react";
+import { Menu, X, Phone, Mail, MapPin, Instagram } from "lucide-react";
 
 /* ================= BRAND CONFIG ================= */
 const BRAND = {
@@ -29,234 +10,204 @@ const BRAND = {
   country: "India",
   phone: "+91 98765 43210",
   email: "hello@hirva.com",
-  whatsapp: "919876543210",
+  whatsapp: "919876543210", // without +
 };
 
-/* ================= FLAVORS DATA ================= */
-const flavorsData: Flavor[] = [
+/* ================= FLAVORS ================= */
+const flavors = [
   {
-    id: 1,
-    name: "Classic Vanilla",
-    category: "Classic",
-    price: 99,
-    desc: "Rich & creamy Madagascar vanilla.",
-    img: "https://images.unsplash.com/photo-1501443762994-82bd5dace89a",
+    name: "American Nuts",
+    img: "https://images.unsplash.com/photo-1589712235276-47c0b93f2d3a",
   },
   {
-    id: 2,
-    name: "Chocolate Heaven",
-    category: "Chocolate",
-    price: 129,
-    desc: "Intense cocoa indulgence.",
-    img: "https://images.unsplash.com/photo-1497032205916-ac775f0649ae",
+    name: "Kaju Draskh",
+    img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c",
   },
   {
-    id: 3,
-    name: "Strawberry Bliss",
-    category: "Fruit",
-    price: 119,
-    desc: "Fresh strawberry swirl delight.",
-    img: "https://images.unsplash.com/photo-1563805042-7684c019e1cb",
-  },
-  {
-    id: 4,
-    name: "Belgian Dark",
-    category: "Premium",
-    price: 149,
-    desc: "Luxury Belgian dark chocolate.",
-    img: "https://images.unsplash.com/photo-1551024601-bec78aea704b",
+    name: "Mango",
+    img: "https://images.unsplash.com/photo-1599785209791-33d0c83b35ef",
   },
 ];
 
-export default function IceCreamWebsite() {
-  const [page, setPage] = useState("home");
-  const [cart, setCart] = useState<Flavor[]>([]);
-  const [filter, setFilter] = useState("All");
-  const [mobileMenu, setMobileMenu] = useState(false);
+export default function HirvaWebsite() {
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-  const addToCart = (flavor: Flavor) => setCart([...cart, flavor]);
-  const total = cart.reduce(
-    (acc: number, item: Flavor) => acc + item.price,
-    0
-  );
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-  const filteredFlavors =
-    filter === "All"
-      ? flavorsData
-      : flavorsData.filter((f) => f.category === filter);
-
-  /* ================= NAVIGATION ================= */
-  const Navigation = () => (
-    <nav className="bg-white shadow-md fixed w-full z-50">
-      <div className="max-w-7xl mx-auto flex justify-between items-center p-4">
-        <h1
-          className="text-2xl font-bold text-red-600 cursor-pointer"
-          onClick={() => setPage("home")}
-        >
-          {BRAND.name}
-        </h1>
-
-        <div className="hidden md:flex gap-6 font-medium">
-          {["home", "about", "flavors", "contact"].map((p) => (
-            <button
-              key={p}
-              onClick={() => setPage(p)}
-              className="hover:text-red-600 capitalize"
-            >
-              {p}
-            </button>
-          ))}
-        </div>
-
-        <div className="md:hidden" onClick={() => setMobileMenu(!mobileMenu)}>
-          {mobileMenu ? <X /> : <Menu />}
-        </div>
-      </div>
-
-      {mobileMenu && (
-        <div className="md:hidden bg-white shadow p-4 space-y-3">
-          {["home", "about", "flavors", "contact"].map((p) => (
-            <button
-              key={p}
-              onClick={() => {
-                setPage(p);
-                setMobileMenu(false);
-              }}
-              className="block w-full text-left capitalize"
-            >
-              {p}
-            </button>
-          ))}
-        </div>
-      )}
-    </nav>
-  );
-
-  /* ================= HERO ================= */
-  const Hero = () => (
-    <section className="min-h-screen bg-gradient-to-r from-red-600 to-pink-400 text-white flex flex-col justify-center items-center text-center px-6 pt-24">
-      <motion.h1
-        initial={{ opacity: 0, y: -30 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-5xl md:text-6xl font-bold mb-6"
-      >
-        Scoop Happiness in Every Bite 🍦
-      </motion.h1>
-      <p className="max-w-xl mb-6 text-lg">
-        Premium handcrafted ice creams made for families, kids & young hearts.
-      </p>
-      <button
-        onClick={() => setPage("flavors")}
-        className="bg-white text-red-600 px-6 py-3 rounded-2xl shadow-lg hover:scale-105 transition"
-      >
-        Explore Flavors
-      </button>
-    </section>
-  );
-
-  /* ================= ABOUT ================= */
-  const About = () => (
-    <section className="py-20 px-6 max-w-5xl mx-auto pt-32">
-      <h2 className="text-4xl font-bold mb-6 text-center">Our Story</h2>
-      <p className="text-lg text-gray-700 text-center">
-        Born in {BRAND.city}, {BRAND.country}, {BRAND.name} was created to
-        spread smiles through premium ice creams crafted with love.
-      </p>
-    </section>
-  );
-
-  /* ================= FLAVORS ================= */
-  const Flavors = () => (
-    <section className="py-20 px-6 pt-32">
-      <h2 className="text-4xl font-bold text-center mb-8">Our Flavors</h2>
-
-      <div className="flex justify-center gap-4 mb-10">
-        {["All", "Classic", "Premium", "Fruit", "Chocolate"].map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setFilter(cat)}
-            className="px-4 py-2 bg-red-100 rounded-full hover:bg-red-200 transition"
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      <div className="grid md:grid-cols-4 gap-8 max-w-7xl mx-auto">
-        {filteredFlavors.map((flavor) => (
-          <div
-            key={flavor.id}
-            className="bg-white rounded-2xl shadow p-4 text-center"
-          >
-            <img
-              src={`${flavor.img}?auto=format&fit=crop&w=400&q=80`}
-              alt={flavor.name}
-              className="rounded-xl mb-4 h-48 w-full object-cover"
-            />
-            <h3 className="font-bold">{flavor.name}</h3>
-            <p className="text-sm text-gray-600">{flavor.desc}</p>
-            <p className="text-red-600 font-semibold">₹{flavor.price}</p>
-            <button
-              onClick={() => addToCart(flavor)}
-              className="mt-3 bg-red-600 text-white px-4 py-2 rounded-xl hover:bg-red-700 transition"
-            >
-              Add to Cart
-            </button>
-          </div>
-        ))}
-      </div>
-
-      {cart.length > 0 && (
-        <div className="mt-12 text-center">
-          <h3 className="text-2xl font-bold mb-4">Cart Total: ₹{total}</h3>
-        </div>
-      )}
-    </section>
-  );
-
-  /* ================= CONTACT ================= */
-  const Contact = () => (
-    <section className="py-20 px-6 bg-pink-100 pt-32">
-      <h2 className="text-4xl font-bold text-center mb-8">Contact Us</h2>
-      <div className="max-w-5xl mx-auto bg-white p-6 rounded-2xl shadow text-center">
-        <p className="flex items-center justify-center gap-2 mb-2">
-          <Phone size={18} /> {BRAND.phone}
-        </p>
-        <p className="flex items-center justify-center gap-2 mb-2">
-          <Mail size={18} /> {BRAND.email}
-        </p>
-        <p className="flex items-center justify-center gap-2">
-          <MapPin size={18} /> {BRAND.city}, {BRAND.country}
-        </p>
-      </div>
-    </section>
-  );
+  const scrollToSection = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    setMobileOpen(false);
+  };
 
   return (
     <div className="font-sans text-gray-800">
-      <Navigation />
 
-      {page === "home" && <Hero />}
-      {page === "about" && <About />}
-      {page === "flavors" && <Flavors />}
-      {page === "contact" && <Contact />}
-
-      {/* WhatsApp Button */}
-      <a
-        href={`https://wa.me/${BRAND.whatsapp}`}
-        target="_blank"
-        rel="noreferrer"
-        className="fixed bottom-6 right-6 bg-green-500 text-white px-4 py-3 rounded-full shadow-lg hover:scale-110 transition"
+      {/* ================= HEADER ================= */}
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled ? "bg-white shadow-md py-3" : "bg-transparent py-5"
+        }`}
       >
-        WhatsApp Order
+        <div className="max-w-6xl mx-auto px-6 flex justify-between items-center">
+
+          {/* LOGO */}
+          <img
+            src="/logo.png"
+            alt="Hirva Ice Cream"
+            className="h-10 w-auto cursor-pointer"
+            onClick={() => scrollToSection("home")}
+          />
+
+          {/* DESKTOP NAV */}
+          <nav className="hidden md:flex gap-8 text-sm font-medium relative">
+
+            <button onClick={() => scrollToSection("home")} className="relative group">
+              Home
+              <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[#d71a21] transition-all duration-300 group-hover:w-full"></span>
+            </button>
+
+            {/* FLAVORS DROPDOWN */}
+            <div className="relative group">
+              <button className="relative">
+                Flavors
+                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[#d71a21] transition-all duration-300 group-hover:w-full"></span>
+              </button>
+
+              <div className="absolute top-8 left-0 bg-white shadow-md rounded-md opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all duration-200 min-w-[180px]">
+                {flavors.map((flavor) => (
+                  <button
+                    key={flavor.name}
+                    onClick={() => scrollToSection("flavors")}
+                    className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                  >
+                    {flavor.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <button onClick={() => scrollToSection("about")} className="relative group">
+              About
+              <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[#d71a21] transition-all duration-300 group-hover:w-full"></span>
+            </button>
+
+            <button onClick={() => scrollToSection("contact")} className="relative group">
+              Contact
+              <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[#d71a21] transition-all duration-300 group-hover:w-full"></span>
+            </button>
+          </nav>
+
+          {/* MOBILE MENU */}
+          <div className="md:hidden">
+            {mobileOpen ? (
+              <X size={26} onClick={() => setMobileOpen(false)} />
+            ) : (
+              <Menu size={26} onClick={() => setMobileOpen(true)} />
+            )}
+          </div>
+        </div>
+
+        {/* MOBILE NAV */}
+        {mobileOpen && (
+          <div className="md:hidden bg-white shadow-md p-4 space-y-4">
+            <button onClick={() => scrollToSection("home")} className="block w-full text-left">Home</button>
+            <button onClick={() => scrollToSection("flavors")} className="block w-full text-left">Flavors</button>
+            <button onClick={() => scrollToSection("about")} className="block w-full text-left">About</button>
+            <button onClick={() => scrollToSection("contact")} className="block w-full text-left">Contact</button>
+          </div>
+        )}
+      </header>
+
+      {/* ================= HERO ================= */}
+      <section id="home" className="min-h-screen flex flex-col justify-center items-center text-center px-6 pt-32 bg-white">
+        <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          Premium Handcrafted Ice Cream
+        </h1>
+        <p className="max-w-xl text-gray-600 mb-6">
+          Simple. Fresh. Joyful. Made with love in Ahmedabad.
+        </p>
+        <button
+          onClick={() => scrollToSection("flavors")}
+          className="px-6 py-2 border border-gray-800 rounded-md hover:bg-gray-100 transition"
+        >
+          Explore Flavors
+        </button>
+      </section>
+
+      {/* ================= FLAVORS ================= */}
+      <section id="flavors" className="py-20 bg-gray-50 text-center">
+        <h2 className="text-3xl font-semibold mb-10">Our Flavors</h2>
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 px-6">
+          {flavors.map((flavor) => (
+            <div key={flavor.name}>
+              <img
+                src={`${flavor.img}?auto=format&fit=crop&w=600&q=80`}
+                alt={flavor.name}
+                className="w-full h-64 object-cover rounded-lg"
+              />
+              <h3 className="mt-4 text-lg font-medium">{flavor.name}</h3>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ================= ABOUT ================= */}
+      <section id="about" className="py-20 text-center">
+        <h2 className="text-3xl font-semibold mb-6">About Us</h2>
+        <p className="max-w-3xl mx-auto text-gray-600">
+          {BRAND.name} brings premium handcrafted flavors made for families and celebrations.
+          We focus on quality ingredients and joyful experiences.
+        </p>
+      </section>
+
+      {/* ================= CONTACT ================= */}
+      <section id="contact" className="py-20 bg-gray-50 text-center">
+        <h2 className="text-3xl font-semibold mb-8">Contact Us</h2>
+
+        <div className="max-w-5xl mx-auto bg-white p-6 rounded-lg shadow-sm">
+          <p className="flex justify-center items-center gap-2 mb-3">
+            <Phone size={16} /> {BRAND.phone}
+          </p>
+          <p className="flex justify-center items-center gap-2 mb-3">
+            <Mail size={16} /> {BRAND.email}
+          </p>
+          <p className="flex justify-center items-center gap-2 mb-3">
+            <MapPin size={16} /> {BRAND.city}, {BRAND.country}
+          </p>
+        </div>
+
+        {/* GOOGLE MAP */}
+        <div className="max-w-5xl mx-auto mt-8 px-6">
+          <iframe
+            src="https://www.google.com/maps?q=Ahmedabad,India&output=embed"
+            className="w-full h-64 rounded-lg border-0"
+            loading="lazy"
+          ></iframe>
+        </div>
+      </section>
+
+      {/* ================= WHATSAPP FLOAT BUTTON ================= */}
+      <a
+        href={`https://wa.me/${BRAND.whatsapp}?text=Hi%20I%20would%20like%20to%20order%20ice%20cream`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 bg-green-500 text-white px-4 py-3 rounded-full shadow-md text-sm hover:bg-green-600 transition"
+      >
+        WhatsApp
       </a>
 
-      {/* Footer */}
-      <footer className="bg-red-600 text-white py-6 text-center mt-10">
-        <p>© 2026 {BRAND.name}. All rights reserved.</p>
+      {/* ================= FOOTER ================= */}
+      <footer className="py-6 text-center text-sm text-gray-600 border-t">
+        © 2026 {BRAND.name}. All Rights Reserved.
         <div className="flex justify-center gap-4 mt-3">
-          <Instagram />
-          <ShoppingCart />
+          <Instagram size={18} />
         </div>
       </footer>
     </div>
